@@ -62,7 +62,7 @@ const About = () => {
           >
             About
             <span className="block mt-2 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
-              SubScape
+              BudgetBox
             </span>
           </motion.h1>
           <motion.p
@@ -82,7 +82,7 @@ const About = () => {
           className="mt-20 prose prose-lg mx-auto text-gray-500"
         >
           <p>
-            SubScape was born from a simple observation: managing multiple digital subscriptions
+            BudgetBox was born from a simple observation: managing multiple digital subscriptions
             has become increasingly complex in today's world. We believed there had to be a better way
             to handle this modern challenge.
           </p>
@@ -90,7 +90,7 @@ const About = () => {
             Our platform combines powerful technology with user-friendly design to help you track,
             manage, and optimize your subscriptions. Whether you're an individual looking to better
             manage personal subscriptions or a business handling multiple service subscriptions,
-            SubScape provides the tools you need.
+            BudgetBox provides the tools you need.
           </p>
         </motion.div>
 
@@ -124,8 +124,8 @@ const About = () => {
           <h2 className="text-3xl font-bold text-gray-900">Get in Touch</h2>
           <p className="mt-4 text-xl text-gray-500">
             We'd love to hear from you. Reach out to us at{' '}
-            <a href="mailto:contact@subscape.com" className="text-indigo-600 hover:text-indigo-500">
-              contact@subscape.com
+            <a href="mailto:charan23114@gmail.com" className="text-indigo-600 hover:text-indigo-500">
+              contact@BudgetBox.com
             </a>
           </p>
         </motion.div>

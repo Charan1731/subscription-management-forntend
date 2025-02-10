@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Home, List, LogOut } from 'lucide-react';
+import { Home, List, LogOut, CreditCard } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
@@ -14,41 +14,66 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-white/80 backdrop-blur-md border-b border-gray-200">
+    <nav className="bg-white/90 backdrop-blur-lg border-b border-gray-200 sticky top-0 z-50 shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center space-x-8">
-            {links.map(({ to, icon: Icon, label }) => (
-              <Link
-                key={to}
-                to={to}
-                className="relative flex items-center space-x-2 text-gray-600 hover:text-indigo-600 transition-colors"
-              >
-                <Icon className="w-5 h-5" />
-                <span>{label}</span>
-                {location.pathname === to && (
+          {/* Logo Section */}
+          <div className="flex items-center">
+            <Link to="/app" className="flex items-center space-x-2 mr-8">
+              <CreditCard className="h-6 w-6 text-indigo-600" />
+              <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
+                BudgetBox
+              </span>
+            </Link>
+            
+            {/* Navigation Links */}
+            <div className="flex items-center space-x-6">
+              {links.map(({ to, icon: Icon, label }) => (
+                <Link
+                  key={to}
+                  to={to}
+                  className="relative group flex items-center space-x-2 px-3 py-2 text-gray-600 hover:text-indigo-600 transition-colors"
+                >
+                  <Icon className="w-5 h-5" />
+                  <span className="font-medium">{label}</span>
+                  {location.pathname === to && (
+                    <motion.div
+                      layoutId="navbar-indicator"
+                      className="absolute -bottom-[1px] left-0 right-0 h-0.5 bg-gradient-to-r from-indigo-600 to-purple-600"
+                      initial={false}
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
                   <motion.div
-                    layoutId="navbar-indicator"
-                    className="absolute -bottom-px left-0 right-0 h-0.5 bg-indigo-600"
+                    className="absolute inset-0 rounded-lg bg-gray-100 opacity-0 group-hover:opacity-100 transition-opacity -z-10"
                     initial={false}
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    transition={{ duration: 0.2 }}
                   />
-                )}
-              </Link>
-            ))}
+                </Link>
+              ))}
+            </div>
           </div>
           
-          <div className="flex items-center space-x-4">
-            <span className="text-sm text-gray-600">
-              Welcome, {user?.name}
-            </span>
-            <button
+          {/* User Section */}
+          <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-3">
+              <div className="h-8 w-8 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 flex items-center justify-center text-white font-medium">
+                {user?.name.charAt(0).toUpperCase()}
+              </div>
+              <span className="text-sm font-medium text-gray-700">
+                {user?.name}
+              </span>
+            </div>
+            
+            <motion.button
               onClick={signOut}
-              className="flex items-center space-x-2 text-gray-600 hover:text-red-600 transition-colors"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-700 hover:text-red-600 hover:bg-red-50 transition-colors"
             >
               <LogOut className="w-5 h-5" />
-              <span>Sign Out</span>
-            </button>
+              <span className="font-medium">Sign Out</span>
+            </motion.button>
           </div>
         </div>
       </div>

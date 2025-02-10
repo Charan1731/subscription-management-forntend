@@ -41,7 +41,7 @@ function App() {
                     <div className="flex items-center justify-center mb-8">
                       <CreditCard className="w-12 h-12 text-indigo-600 mr-4" />
                       <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
-                        SubScape
+                        BudgetBox
                       </h1>
                     </div>
                     

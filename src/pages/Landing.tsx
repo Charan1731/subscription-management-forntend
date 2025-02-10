@@ -63,7 +63,7 @@ const Landing = () => {
                   <Link to="/" className="flex items-center space-x-2">
                     <CreditCard className="h-8 w-8 text-indigo-600" />
                     <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
-                      SubScape
+                      BudgetBox
                     </span>
                   </Link>
                 </div>
