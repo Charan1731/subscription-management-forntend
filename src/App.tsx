@@ -6,6 +6,7 @@ import AuthGuard from './components/AuthGuard';
 import Navbar from './components/Navbar';
 import Dashboard from './components/Dashboard';
 import SubscriptionList from './components/SubscriptionList';
+import NewSubscription from './pages/NewSubscription';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import Landing from './pages/Landing';
@@ -48,6 +49,7 @@ function App() {
                       <Routes>
                         <Route path="/" element={<Dashboard />} />
                         <Route path="/subscriptions" element={<SubscriptionList />} />
+                        <Route path="/subscriptions/new" element={<NewSubscription />} />
                       </Routes>
                     </AnimatePresence>
                   </motion.div>
@@ -61,4 +63,4 @@ function App() {
   );
 }
 
-export default App
+export default App;

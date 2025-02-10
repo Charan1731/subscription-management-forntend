@@ -3,8 +3,10 @@ import { motion } from 'framer-motion';
 import { 
   CreditCard, Shield, BarChart3, Zap, 
   Bell, Wallet, Clock, Settings,
-  RefreshCw, PieChart, Lock, Smartphone 
+  RefreshCw, PieChart, Lock, Smartphone,
+  ArrowLeft
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Features = () => {
   const features = [
@@ -26,7 +28,7 @@ const Features = () => {
     {
       icon: Wallet,
       title: 'Budget Management',
-      description: `Set budgets for different categories and get alerts when you're approaching limits.`
+      description: 'Set budgets for different categories and get alerts when you are approaching limits.'
     },
     {
       icon: Clock,
@@ -94,6 +96,14 @@ const Features = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Link
+          to="/"
+          className="inline-flex items-center text-gray-600 hover:text-indigo-600 transition-colors mb-8"
+        >
+          <ArrowLeft className="w-5 h-5 mr-2" />
+          Back to Home
+        </Link>
+
         <div className="text-center">
           <motion.h1
             initial={{ opacity: 0, y: -20 }}

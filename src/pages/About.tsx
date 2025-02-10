@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Users, Target, Heart } from 'lucide-react';
+import { Users, Target, Heart, ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const About = () => {
   const values = [
@@ -17,7 +18,7 @@ const About = () => {
     {
       icon: Heart,
       title: 'Passion',
-      description: `We're passionate about helping people take control of their digital subscriptions and financial well-being.`
+      description: 'We are passionate about helping people take control of their digital subscriptions and financial well-being.'
     }
   ];
 
@@ -45,6 +46,14 @@ const About = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Link
+          to="/"
+          className="inline-flex items-center text-gray-600 hover:text-indigo-600 transition-colors mb-8"
+        >
+          <ArrowLeft className="w-5 h-5 mr-2" />
+          Back to Home
+        </Link>
+
         <div className="text-center">
           <motion.h1
             initial={{ opacity: 0, y: -20 }}

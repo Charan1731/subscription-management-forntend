@@ -1,7 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, DollarSign, RefreshCw } from 'lucide-react';
+import { Calendar, DollarSign, RefreshCw, Search, Plus, Filter } from 'lucide-react';
 import { format } from 'date-fns';
+import { Link } from 'react-router-dom';
 
 const mockSubscriptions = [
   {
@@ -71,11 +72,30 @@ const SubscriptionList = () => {
       animate="visible"
       className="space-y-6"
     >
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">Your Subscriptions</h2>
-        <button className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
-          Add New
-        </button>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex-1">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              type="text"
+              placeholder="Search subscriptions..."
+              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            />
+          </div>
+        </div>
+        <div className="flex items-center gap-4">
+          <button className="flex items-center px-4 py-2 text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">
+            <Filter className="w-4 h-4 mr-2" />
+            Filter
+          </button>
+          <Link
+            to="/app/subscriptions/new"
+            className="flex items-center px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add New
+          </Link>
+        </div>
       </div>
 
       <div className="grid gap-6">
@@ -83,7 +103,7 @@ const SubscriptionList = () => {
           <motion.div
             key={subscription._id}
             variants={itemVariants}
-            className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+            className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all duration-300"
           >
             <div className="p-6">
               <div className="flex justify-between items-start">
@@ -94,33 +114,42 @@ const SubscriptionList = () => {
                   </span>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
                     ${subscription.price}
                   </p>
                   <p className="text-sm text-gray-500 capitalize">{subscription.frequency}</p>
                 </div>
               </div>
 
-              <div className="mt-6 grid grid-cols-3 gap-4">
-                <div className="flex items-center text-gray-600">
-                  <Calendar className="w-5 h-5 mr-2" />
-                  <span className="text-sm">Started {format(new Date(subscription.startDate), 'MMM d, yyyy')}</span>
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="flex items-center text-gray-600 bg-gray-50 rounded-lg p-3">
+                  <Calendar className="w-5 h-5 mr-3 text-indigo-600" />
+                  <div>
+                    <p className="text-xs text-gray-500">Start Date</p>
+                    <p className="text-sm font-medium">{format(new Date(subscription.startDate), 'MMM d, yyyy')}</p>
+                  </div>
                 </div>
-                <div className="flex items-center text-gray-600">
-                  <RefreshCw className="w-5 h-5 mr-2" />
-                  <span className="text-sm">Renews {format(new Date(subscription.renewalDate), 'MMM d, yyyy')}</span>
+                <div className="flex items-center text-gray-600 bg-gray-50 rounded-lg p-3">
+                  <RefreshCw className="w-5 h-5 mr-3 text-purple-600" />
+                  <div>
+                    <p className="text-xs text-gray-500">Next Renewal</p>
+                    <p className="text-sm font-medium">{format(new Date(subscription.renewalDate), 'MMM d, yyyy')}</p>
+                  </div>
                 </div>
-                <div className="flex items-center text-gray-600">
-                  <DollarSign className="w-5 h-5 mr-2" />
-                  <span className="text-sm">{subscription.paymentMethod}</span>
+                <div className="flex items-center text-gray-600 bg-gray-50 rounded-lg p-3">
+                  <DollarSign className="w-5 h-5 mr-3 text-green-600" />
+                  <div>
+                    <p className="text-xs text-gray-500">Payment Method</p>
+                    <p className="text-sm font-medium">{subscription.paymentMethod}</p>
+                  </div>
                 </div>
               </div>
 
               <div className="mt-6 flex space-x-4">
-                <button className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                <button className="flex-1 px-4 py-2 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-medium">
                   Edit
                 </button>
-                <button className="flex-1 px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors">
+                <button className="flex-1 px-4 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors font-medium">
                   Cancel
                 </button>
               </div>
