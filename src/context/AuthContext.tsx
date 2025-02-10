@@ -23,47 +23,74 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const navigate = useNavigate();
   const url = "http://localhost:5500";
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const userDataString = localStorage.getItem('user');
+  const checkAuth = async () => {
+    try {
+      console.log('Checking authentication status...');
+      const token = localStorage.getItem('token');
+      const userDataString = localStorage.getItem('user');
 
-        if (token && userDataString && userDataString !== "undefined") {
-          const userData: User = JSON.parse(userDataString);
-          setUser(userData);
-        } else {
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-        }
-      } catch (error) {
-        console.error('Auth check failed:', error);
+      console.log('Stored token:', token);
+      console.log('Stored user data:', userDataString);
+
+      if (token && userDataString && userDataString !== "undefined") {
+        const userData: User = JSON.parse(userDataString);
+        console.log('Valid user data found:', userData);
+        setUser(userData);
+        return true;
+      } else {
+        console.log('No valid authentication data found');
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-      } finally {
-        setIsLoading(false);
+        return false;
       }
-    };
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
     checkAuth();
   }, []);
 
   const signIn = async (email: string, password: string) => {
     try {
       setIsLoading(true);
+      console.log('Attempting sign in for:', email);
+
       const response = await fetch(`${url}/api/v1/auth/sign-in`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        credentials: 'include', // Important for cookies
         body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
+      console.log('Sign in response:', data);
+
       if (!response.ok) throw new Error(data.message || 'Sign in failed');
 
+      if (!data.token) {
+        throw new Error('No token received from server');
+      }
+
+      console.log('Setting authentication data...');
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
+      
       setUser(data.user);
-      navigate('/Features');
+      console.log('Authentication successful, navigating to app...');
+      
+      // Ensure state is updated before navigation
+      await Promise.resolve();
+      navigate('/app', { replace: true });
     } catch (error) {
       console.error('Sign in error:', error);
       throw error;
@@ -75,7 +102,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signUp = async (name: string, email: string, password: string) => {
     try {
       setIsLoading(true);
-      const response = await fetch(`${url}/api/v1/auth/sign-up`, {
+      const response = await fetch(`${url}/api/v1/auth/sign-up`, { // Fix template literal
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password }),
@@ -87,7 +114,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       setUser(data.user);
-      navigate('/');
+      
+      // Navigate to app instead of home page after signup
+      await Promise.resolve(); // Allow state update to complete
+      navigate('/app', { replace: true });
     } catch (error) {
       console.error('Sign up error:', error);
       throw error;
@@ -100,15 +130,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setIsLoading(true);
       await fetch(`${url}/api/v1/auth/sign-out`, { method: 'POST' });
-
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      setUser(null);
-      navigate('/sign-in');
     } catch (error) {
       console.error('Sign out error:', error);
     } finally {
+      // Always clear local state and navigate, even if the API call fails
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      setUser(null);
       setIsLoading(false);
+      navigate('/', { replace: true });
     }
   };
 
