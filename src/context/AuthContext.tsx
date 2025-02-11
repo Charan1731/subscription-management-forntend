@@ -117,7 +117,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       // Navigate to app instead of home page after signup
       await Promise.resolve(); // Allow state update to complete
-      navigate('/app', { replace: true });
+      navigate('/', { replace: true });
     } catch (error) {
       console.error('Sign up error:', error);
       throw error;

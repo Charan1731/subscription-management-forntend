@@ -1,10 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, CreditCard, Calendar, DollarSign, Tag, Clock, CreditCardIcon, FileText } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
 const NewSubscription = () => {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: '',
+    category: '',
+    price: '',
+    frequency: '',
+    startDate: '',
+    paymentMethod: '',
+    notes: ''
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -12,44 +29,73 @@ const NewSubscription = () => {
     navigate('/app/subscriptions');
   };
 
+  const inputClasses = "w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-white/50 backdrop-blur-sm";
+  const labelClasses = "block text-sm font-medium text-gray-700 mb-2";
+
   return (
-    <div className="max-w-2xl mx-auto">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-xl shadow-lg p-6"
-      >
-        <div className="flex items-center mb-6">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="max-w-4xl mx-auto px-4 py-8"
+    >
+      <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-8">
+        <div className="flex items-center mb-8">
           <Link
             to="/app/subscriptions"
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors mr-4"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-5 h-5 text-gray-600" />
           </Link>
-          <h2 className="text-2xl font-bold ml-2">Add New Subscription</h2>
+          <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
+            Add New Subscription
+          </h2>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Service Name
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Service Name */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <label htmlFor="name" className={labelClasses}>
+                <div className="flex items-center mb-1">
+                  <CreditCard className="w-4 h-4 mr-2 text-indigo-600" />
+                  <span>Service Name</span>
+                </div>
               </label>
               <input
+                id="name"
+                name="name"
                 type="text"
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                value={formData.name}
+                onChange={handleChange}
+                className={inputClasses}
                 placeholder="e.g., Netflix, Spotify"
               />
-            </div>
+            </motion.div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Category
+            {/* Category */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <label htmlFor="category" className={labelClasses}>
+                <div className="flex items-center mb-1">
+                  <Tag className="w-4 h-4 mr-2 text-indigo-600" />
+                  <span>Category</span>
+                </div>
               </label>
               <select
+                id="category"
+                name="category"
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                value={formData.category}
+                onChange={handleChange}
+                className={inputClasses}
               >
                 <option value="">Select a category</option>
                 <option value="Entertainment">Entertainment</option>
@@ -60,33 +106,55 @@ const NewSubscription = () => {
                 <option value="Utilities">Utilities</option>
                 <option value="Other">Other</option>
               </select>
-            </div>
+            </motion.div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Price
+            {/* Price */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <label htmlFor="price" className={labelClasses}>
+                <div className="flex items-center mb-1">
+                  <DollarSign className="w-4 h-4 mr-2 text-indigo-600" />
+                  <span>Price</span>
+                </div>
               </label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
-                  $
-                </span>
+                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
                 <input
+                  id="price"
+                  name="price"
                   type="number"
                   step="0.01"
                   required
-                  className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  value={formData.price}
+                  onChange={handleChange}
+                  className={`${inputClasses} pl-8`}
                   placeholder="0.00"
                 />
               </div>
-            </div>
+            </motion.div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Billing Frequency
+            {/* Billing Frequency */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              <label htmlFor="frequency" className={labelClasses}>
+                <div className="flex items-center mb-1">
+                  <Clock className="w-4 h-4 mr-2 text-indigo-600" />
+                  <span>Billing Frequency</span>
+                </div>
               </label>
               <select
+                id="frequency"
+                name="frequency"
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                value={formData.frequency}
+                onChange={handleChange}
+                className={inputClasses}
               >
                 <option value="">Select frequency</option>
                 <option value="monthly">Monthly</option>
@@ -94,26 +162,50 @@ const NewSubscription = () => {
                 <option value="weekly">Weekly</option>
                 <option value="daily">Daily</option>
               </select>
-            </div>
+            </motion.div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Start Date
+            {/* Start Date */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              <label htmlFor="startDate" className={labelClasses}>
+                <div className="flex items-center mb-1">
+                  <Calendar className="w-4 h-4 mr-2 text-indigo-600" />
+                  <span>Start Date</span>
+                </div>
               </label>
               <input
+                id="startDate"
+                name="startDate"
                 type="date"
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                value={formData.startDate}
+                onChange={handleChange}
+                className={inputClasses}
               />
-            </div>
+            </motion.div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Payment Method
+            {/* Payment Method */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.6 }}
+            >
+              <label htmlFor="paymentMethod" className={labelClasses}>
+                <div className="flex items-center mb-1">
+                  <CreditCardIcon className="w-4 h-4 mr-2 text-indigo-600" />
+                  <span>Payment Method</span>
+                </div>
               </label>
               <select
+                id="paymentMethod"
+                name="paymentMethod"
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                value={formData.paymentMethod}
+                onChange={handleChange}
+                className={inputClasses}
               >
                 <option value="">Select payment method</option>
                 <option value="Credit Card">Credit Card</option>
@@ -121,37 +213,54 @@ const NewSubscription = () => {
                 <option value="Bank Transfer">Bank Transfer</option>
                 <option value="Other">Other</option>
               </select>
-            </div>
+            </motion.div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Notes (Optional)
+          {/* Notes */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+          >
+            <label htmlFor="notes" className={labelClasses}>
+              <div className="flex items-center mb-1">
+                <FileText className="w-4 h-4 mr-2 text-indigo-600" />
+                <span>Notes (Optional)</span>
+              </div>
             </label>
             <textarea
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              rows={3}
-              placeholder="Add any additional notes about this subscription"
+              id="notes"
+              name="notes"
+              value={formData.notes}
+              onChange={handleChange}
+              className={`${inputClasses} min-h-[120px] resize-none`}
+              placeholder="Add any additional notes about this subscription..."
             />
-          </div>
+          </motion.div>
 
-          <div className="flex justify-end space-x-4">
+          {/* Action Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+            className="flex justify-end space-x-4 pt-4"
+          >
             <Link
               to="/app/subscriptions"
-              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-6 py-3 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors font-medium"
             >
               Cancel
             </Link>
             <button
               type="submit"
-              className="px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-colors"
+              className="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-colors font-medium shadow-md hover:shadow-lg"
             >
               Add Subscription
             </button>
-          </div>
+          </motion.div>
         </form>
-      </motion.div>
-    </div>
+      </div>
+    </motion.div>
   );
 };
 
