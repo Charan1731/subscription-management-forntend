@@ -48,7 +48,7 @@ const NewSubscription = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/v1/subscriptions', {
+      const response = await fetch('http://localhost:5500/api/v1/subscriptions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
