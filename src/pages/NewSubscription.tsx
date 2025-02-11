@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, CreditCard, Calendar, DollarSign, Tag, Clock, CreditCardIcon, FileText } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
 const NewSubscription = () => {
   const navigate = useNavigate();
+  const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     category: '',
@@ -15,18 +17,65 @@ const NewSubscription = () => {
     notes: ''
   });
 
+  // Check for token on component mount
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+    }
+  }, [navigate]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
+    if (error) setError('');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement subscription creation
-    navigate('/app/subscriptions');
+    setIsSubmitting(true);
+    setError('');
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError('Authentication required');
+      setIsSubmitting(false);
+      navigate('/login');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/api/v1/subscriptions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        setError('Session expired. Please login again.');
+        navigate('/login');
+        return;
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to add subscription');
+      }
+
+      navigate('/app/subscriptions');
+    } catch (error) {
+      console.error('Error:', error);
+      setError(error instanceof Error ? error.message : 'Failed to add subscription');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const inputClasses = "w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-white/50 backdrop-blur-sm";
@@ -51,6 +100,10 @@ const NewSubscription = () => {
           </h2>
         </div>
 
+        {error && (
+          <p>${error}</p>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Service Name */}
@@ -74,6 +127,7 @@ const NewSubscription = () => {
                 onChange={handleChange}
                 className={inputClasses}
                 placeholder="e.g., Netflix, Spotify"
+                disabled={isSubmitting}
               />
             </motion.div>
 
@@ -96,6 +150,7 @@ const NewSubscription = () => {
                 value={formData.category}
                 onChange={handleChange}
                 className={inputClasses}
+                disabled={isSubmitting}
               >
                 <option value="">Select a category</option>
                 <option value="Entertainment">Entertainment</option>
@@ -132,6 +187,7 @@ const NewSubscription = () => {
                   onChange={handleChange}
                   className={`${inputClasses} pl-8`}
                   placeholder="0.00"
+                  disabled={isSubmitting}
                 />
               </div>
             </motion.div>
@@ -155,6 +211,7 @@ const NewSubscription = () => {
                 value={formData.frequency}
                 onChange={handleChange}
                 className={inputClasses}
+                disabled={isSubmitting}
               >
                 <option value="">Select frequency</option>
                 <option value="monthly">Monthly</option>
@@ -184,6 +241,7 @@ const NewSubscription = () => {
                 value={formData.startDate}
                 onChange={handleChange}
                 className={inputClasses}
+                disabled={isSubmitting}
               />
             </motion.div>
 
@@ -206,6 +264,7 @@ const NewSubscription = () => {
                 value={formData.paymentMethod}
                 onChange={handleChange}
                 className={inputClasses}
+                disabled={isSubmitting}
               >
                 <option value="">Select payment method</option>
                 <option value="Credit Card">Credit Card</option>
@@ -235,6 +294,7 @@ const NewSubscription = () => {
               onChange={handleChange}
               className={`${inputClasses} min-h-[120px] resize-none`}
               placeholder="Add any additional notes about this subscription..."
+              disabled={isSubmitting}
             />
           </motion.div>
 
@@ -247,15 +307,18 @@ const NewSubscription = () => {
           >
             <Link
               to="/app/subscriptions"
-              className="px-6 py-3 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+              className="px-6 py-3 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors font-medium disabled:opacity-50"
+              tabIndex={isSubmitting ? -1 : undefined}
+              onClick={e => isSubmitting && e.preventDefault()}
             >
               Cancel
             </Link>
             <button
               type="submit"
-              className="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-colors font-medium shadow-md hover:shadow-lg"
+              disabled={isSubmitting}
+              className="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-colors font-medium shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Add Subscription
+              {isSubmitting ? 'Adding...' : 'Add Subscription'}
             </button>
           </motion.div>
         </form>
