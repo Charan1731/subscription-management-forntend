@@ -1,47 +1,28 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, DollarSign, RefreshCw, Search, Plus, X, SlidersHorizontal } from 'lucide-react';
 import { format } from 'date-fns';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { Subscription } from '../types';
 
-const mockSubscriptions = [
-  {
-    _id: '1',
-    name: 'Netflix',
-    currency: 'USD',
-    price: 15.99,
-    frequency: 'monthly',
-    category: 'Entertainment',
-    paymentMethod: 'Credit Card',
-    status: 'active',
-    startDate: '2024-01-01',
-    renewalDate: '2024-03-01',
-  },
-  {
-    _id: '2',
-    name: 'Spotify',
-    currency: 'USD',
-    price: 9.99,
-    frequency: 'monthly',
-    category: 'Entertainment',
-    paymentMethod: 'PayPal',
-    status: 'active',
-    startDate: '2024-01-15',
-    renewalDate: '2024-03-15',
-  },
-] as const;
-
-const categoryColors = {
+const categoryColors: Record<string, string> = {
   Entertainment: 'bg-purple-100 text-purple-800',
   Education: 'bg-blue-100 text-blue-800',
   Health: 'bg-green-100 text-green-800',
   Fitness: 'bg-orange-100 text-orange-800',
   Productivity: 'bg-indigo-100 text-indigo-800',
   Utilities: 'bg-gray-100 text-gray-800',
+  Food: 'bg-red-100 text-red-800',
   Other: 'bg-pink-100 text-pink-800',
 };
 
 const SubscriptionList = () => {
+  const navigate = useNavigate();
+  const { user, isLoading: authLoading } = useAuth();
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
@@ -50,6 +31,43 @@ const SubscriptionList = () => {
     priceRange: '',
     frequency: '',
   });
+
+  useEffect(() => {
+    const fetchSubscriptions = async () => {
+      const token = localStorage.getItem('token');
+      if (!token || !user) {
+        navigate('/sign-in');
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://localhost:5500/api/v1/subscriptions/user/${user._id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          }
+        });
+
+        if (response.status === 401) {
+          localStorage.removeItem('token');
+          navigate('/sign-in');
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch subscriptions');
+        }
+
+        const data = await response.json();
+        setSubscriptions(data.data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSubscriptions();
+  }, [navigate, user]);
 
   const handleFilterChange = (name: string, value: string) => {
     setFilters(prev => ({
@@ -67,8 +85,8 @@ const SubscriptionList = () => {
     });
   };
 
-  const filterSubscriptions = (subscriptions: typeof mockSubscriptions) => {
-    return subscriptions.filter(sub => {
+  const filterSubscriptions = (subs: Subscription[]) => {
+    return subs.filter(sub => {
       const matchesSearch = sub.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = !filters.category || sub.category === filters.category;
       const matchesStatus = !filters.status || sub.status === filters.status;
@@ -84,30 +102,38 @@ const SubscriptionList = () => {
     });
   };
 
-  const filteredSubscriptions = filterSubscriptions(mockSubscriptions);
+  const handleCancelSubscription = async (subscriptionId: string) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/sign-in');
+      return;
+    }
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
+    try {
+      const response = await fetch(`/api/subscriptions/${subscriptionId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        }
+      });
+
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        navigate('/sign-in');
+        return;
       }
+
+      if (!response.ok) {
+        throw new Error('Failed to cancel subscription');
+      }
+
+      setSubscriptions(prev => prev.filter(sub => sub._id !== subscriptionId));
+    } catch (err) {
+      console.error('Error cancelling subscription:', err);
     }
   };
 
-  const itemVariants = {
-    hidden: { x: -20, opacity: 0 },
-    visible: {
-      x: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 24
-      }
-    }
-  };
+  const filteredSubscriptions = filterSubscriptions(subscriptions);
 
   const filterPanelVariants = {
     hidden: {
@@ -143,11 +169,32 @@ const SubscriptionList = () => {
     }
   };
 
+  if (authLoading || loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-red-600">Error: {error}</p>
+        <button 
+          onClick={() => window.location.reload()} 
+          className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
   return (
     <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       className="space-y-6"
     >
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -241,13 +288,9 @@ const SubscriptionList = () => {
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   >
                     <option value="">All Categories</option>
-                    <option value="Entertainment">Entertainment</option>
-                    <option value="Education">Education</option>
-                    <option value="Health">Health</option>
-                    <option value="Fitness">Fitness</option>
-                    <option value="Productivity">Productivity</option>
-                    <option value="Utilities">Utilities</option>
-                    <option value="Other">Other</option>
+                    {Object.keys(categoryColors).map(category => (
+                      <option key={category} value={category}>{category}</option>
+                    ))}
                   </select>
                 </div>
                 <div>
@@ -303,7 +346,8 @@ const SubscriptionList = () => {
           filteredSubscriptions.map((subscription) => (
             <motion.div
               key={subscription._id}
-              variants={itemVariants}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all duration-300"
             >
               <div className="p-6">
@@ -333,24 +377,30 @@ const SubscriptionList = () => {
                   <div className="flex items-center text-gray-600 bg-gray-50 rounded-lg p-3">
                     <RefreshCw className="w-5 h-5 mr-3 text-purple-600" />
                     <div>
-                      <p className="text-xs text-gray-500">Next Renewal</p>
-                      <p className="text-sm font-medium">{format(new Date(subscription.renewalDate), 'MMM d, yyyy')}</p>
+                      <p className="text-xs text-gray-500">Payment Method</p>
+                      <p className="text-sm font-medium">{subscription.paymentMethod}</p>
                     </div>
                   </div>
                   <div className="flex items-center text-gray-600 bg-gray-50 rounded-lg p-3">
                     <DollarSign className="w-5 h-5 mr-3 text-green-600" />
                     <div>
-                      <p className="text-xs text-gray-500">Payment Method</p>
-                      <p className="text-sm font-medium">{subscription.paymentMethod}</p>
+                      <p className="text-xs text-gray-500">Status</p>
+                      <p className="text-sm font-medium capitalize">{subscription.status}</p>
                     </div>
                   </div>
                 </div>
 
                 <div className="mt-6 flex space-x-4">
-                  <button className="flex-1 px-4 py-2 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-medium">
+                  <Link
+                    to={`/app/subscriptions/edit/${subscription._id}`}
+                    className="flex-1 px-4 py-2 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-medium text-center"
+                  >
                     Edit
-                  </button>
-                  <button className="flex-1 px-4 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors font-medium">
+                  </Link>
+                  <button
+                    onClick={() => handleCancelSubscription(subscription._id)}
+                    className="flex-1 px-4 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors font-medium"
+                  >
                     Cancel
                   </button>
                 </div>
@@ -369,6 +419,6 @@ const SubscriptionList = () => {
       </div>
     </motion.div>
   );
-}
+};
 
 export default SubscriptionList;
