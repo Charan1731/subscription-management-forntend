@@ -7,7 +7,6 @@ const api = axios.create({
   },
 });
 
-// Add auth token to requests
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
@@ -16,7 +15,6 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Auth API
 export const authAPI = {
   signUp: (data: { name: string; email: string; password: string }) =>
     api.post('/auth/sign-up', data),
@@ -25,7 +23,6 @@ export const authAPI = {
   signOut: () => api.post('/auth/sign-out'),
 };
 
-// Subscription API
 export const subscriptionAPI = {
   getAll: () => api.get('/subscriptions'),
   getById: (id: string) => api.get(`/subscriptions/${id}`),

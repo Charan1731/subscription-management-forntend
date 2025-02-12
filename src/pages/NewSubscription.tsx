@@ -17,7 +17,6 @@ const NewSubscription = () => {
     notes: ''
   });
 
-  // Check for token on component mount
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -106,7 +105,6 @@ const NewSubscription = () => {
 
         <form onSubmit={handleSubmit} className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Service Name */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -130,8 +128,6 @@ const NewSubscription = () => {
                 disabled={isSubmitting}
               />
             </motion.div>
-
-            {/* Category */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -163,8 +159,6 @@ const NewSubscription = () => {
                 <option value="Other">Other</option>
               </select>
             </motion.div>
-
-            {/* Price */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -192,8 +186,6 @@ const NewSubscription = () => {
                 />
               </div>
             </motion.div>
-
-            {/* Billing Frequency */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -221,8 +213,6 @@ const NewSubscription = () => {
                 <option value="daily">Daily</option>
               </select>
             </motion.div>
-
-            {/* Start Date */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -245,8 +235,6 @@ const NewSubscription = () => {
                 disabled={isSubmitting}
               />
             </motion.div>
-
-            {/* Payment Method */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -275,8 +263,6 @@ const NewSubscription = () => {
               </select>
             </motion.div>
           </div>
-
-          {/* Notes */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -298,8 +284,6 @@ const NewSubscription = () => {
               disabled={isSubmitting}
             />
           </motion.div>
-
-          {/* Action Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

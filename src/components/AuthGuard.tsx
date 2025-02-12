@@ -28,8 +28,6 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
       </div>
     );
   }
-
-  // Only redirect if we're sure there's no user and we're not loading
   if (!isLoading && !user) {
     console.log('AuthGuard - Redirecting to sign-in');
     return <Navigate to="/sign-in" replace />;

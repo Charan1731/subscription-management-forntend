@@ -49,8 +49,6 @@ const Dashboard = () => {
 
     fetchSubscriptions();
   }, [navigate, user]);
-
-  // Calculate dashboard statistics
   const calculateStats = () => {
     const now = new Date();
     const activeSubscriptions = subscriptions.filter(sub => sub.status === 'active');
@@ -70,7 +68,7 @@ const Dashboard = () => {
       }
     }, 0);
 
-    const lastMonthSpend = monthlySpend * 0.9; // Simulated last month's spend
+    const lastMonthSpend = monthlySpend * 0.9; 
     const spendDifference = monthlySpend - lastMonthSpend;
 
     const nextRenewal = activeSubscriptions
@@ -117,8 +115,6 @@ const Dashboard = () => {
       }
     ];
   };
-
-  // Calculate recent activity
   const calculateRecentActivity = () => {
     return subscriptions
       .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime())
@@ -131,8 +127,6 @@ const Dashboard = () => {
         date: sub.startDate,
       }));
   };
-
-  // Calculate spending breakdown
   const calculateSpendingBreakdown = () => {
     const categoryTotals = subscriptions
       .filter(sub => sub.status === 'active')

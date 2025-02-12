@@ -52,7 +52,6 @@ const Landing = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100">
-      {/* Hero Section */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -129,8 +128,6 @@ const Landing = () => {
           </div>
         </div>
       </div>
-
-      {/* Features Section */}
       <motion.div
         variants={containerVariants}
         initial="hidden"
@@ -170,8 +167,6 @@ const Landing = () => {
           </div>
         </div>
       </motion.div>
-
-      {/* CTA Section */}
       <div className="bg-gradient-to-r from-indigo-600 to-purple-600">
         <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8 lg:flex lg:items-center lg:justify-between">
           <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">

@@ -68,7 +68,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        credentials: 'include', // Important for cookies
+        credentials: 'include',
         body: JSON.stringify({ email, password }),
       });
 
@@ -88,7 +88,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(data.user);
       console.log('Authentication successful, navigating to app...');
       
-      // Ensure state is updated before navigation
       await Promise.resolve();
       navigate('/app', { replace: true });
     } catch (error) {
@@ -102,7 +101,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signUp = async (name: string, email: string, password: string) => {
     try {
       setIsLoading(true);
-      const response = await fetch(`${url}/api/v1/auth/sign-up`, { // Fix template literal
+      const response = await fetch(`${url}/api/v1/auth/sign-up`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password }),
@@ -114,9 +113,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       setUser(data.user);
-      
-      // Navigate to app instead of home page after signup
-      await Promise.resolve(); // Allow state update to complete
+      await Promise.resolve(); 
       navigate('/', { replace: true });
     } catch (error) {
       console.error('Sign up error:', error);
@@ -133,7 +130,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (error) {
       console.error('Sign out error:', error);
     } finally {
-      // Always clear local state and navigate, even if the API call fails
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       setUser(null);
