@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Home, List, LogOut, CreditCard, Menu, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -84,50 +84,58 @@ const Navbar = () => {
             </motion.button>
           </div>
         </div>
-        {isMobileMenuOpen && (
-          <div className="md:hidden">
-            <div className="flex flex-col space-y-4 mt-4">
-              {links.map(({ to, icon: Icon, label }) => (
-                <Link
-                  key={to}
-                  to={to}
-                  className="relative group flex items-center space-x-2 px-3 py-2 text-gray-600 hover:text-indigo-600 transition-colors"
-                  onClick={toggleMobileMenu}
-                >
-                  <Icon className="w-5 h-5" />
-                  <span className="font-medium">{label}</span>
-                  {location.pathname === to && (
-                    <motion.div
-                      layoutId="navbar-indicator"
-                      className="absolute -bottom-[1px] left-0 right-0 h-0.5 bg-gradient-to-r from-indigo-600 to-purple-600"
-                      initial={false}
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                </Link>
-              ))}
-            </div>
-            <div className="mt-6 pt-4 border-t border-gray-200">
-              <div className="flex items-center space-x-3">
-                <div className="h-8 w-8 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 flex items-center justify-center text-white font-medium">
-                  {user?.name.charAt(0).toUpperCase()}
-                </div>
-                <span className="text-sm font-medium text-gray-700">
-                  {user?.name}
-                </span>
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="md:hidden"
+            >
+              <div className="flex flex-col space-y-4 mt-4">
+                {links.map(({ to, icon: Icon, label }) => (
+                  <Link
+                    key={to}
+                    to={to}
+                    className="relative group flex items-center space-x-2 px-3 py-2 text-gray-600 hover:text-indigo-600 transition-colors"
+                    onClick={toggleMobileMenu}
+                  >
+                    <Icon className="w-5 h-5" />
+                    <span className="font-medium">{label}</span>
+                    {location.pathname === to && (
+                      <motion.div
+                        layoutId="navbar-indicator"
+                        className="absolute -bottom-[1px] left-0 right-0 h-0.5 bg-gradient-to-r from-indigo-600 to-purple-600"
+                        initial={false}
+                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      />
+                    )}
+                  </Link>
+                ))}
               </div>
-              <motion.button
-                onClick={signOut}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full flex items-center justify-center space-x-2 px-4 py-2 mt-4 rounded-lg text-red-600 bg-red-50 opacity-90 hover:opacity-100 transition-colors"
-              >
-                <LogOut className="w-5 h-5" />
-                <span className="font-medium">Sign Out</span>
-              </motion.button>
-            </div>
-          </div>
-        )}
+              <div className="mt-6 pt-4 border-t border-gray-200">
+                <div className="flex items-center space-x-3">
+                  <div className="h-8 w-8 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 flex items-center justify-center text-white font-medium">
+                    {user?.name.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">
+                    {user?.name}
+                  </span>
+                </div>
+                <motion.button
+                  onClick={signOut}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full flex items-center justify-center space-x-2 px-4 py-2 mt-4 rounded-lg text-red-600 bg-red-50 opacity-90 hover:opacity-100 transition-colors"
+                >
+                  <LogOut className="w-5 h-5" />
+                  <span className="font-medium">Sign Out</span>
+                </motion.button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </nav>
   );
