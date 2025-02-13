@@ -17,6 +17,12 @@ const categoryColors: Record<string, string> = {
   Other: 'bg-pink-100 text-pink-800 border-pink-200',
 };
 
+const statusColors: Record<string, string> = {
+  active: 'bg-green-100 text-green-800 border-green-200',
+  cancelled: 'bg-red-100 text-red-800 border-red-200',
+  expired: 'bg-gray-100 text-gray-800 border-gray-200',
+};
+
 const searchPlaceholders = [
   'Search by name...',
   'Try "Netflix"...',
@@ -126,7 +132,7 @@ const SubscriptionList = () => {
     }
 
     try {
-      const response = await fetch(`/api/subscriptions/${subscriptionId}`, {
+      const response = await fetch(`http://localhost:5500/api/v1/subscriptions/${subscriptionId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -143,9 +149,11 @@ const SubscriptionList = () => {
         throw new Error('Failed to cancel subscription');
       }
 
+      // Remove the deleted subscription from the list
       setSubscriptions(prev => prev.filter(sub => sub._id !== subscriptionId));
     } catch (err) {
       console.error('Error cancelling subscription:', err);
+      setError('Failed to cancel subscription. Please try again.');
     }
   };
 
@@ -364,108 +372,103 @@ const SubscriptionList = () => {
       </AnimatePresence>
 
       <div className="grid gap-6">
-        {filteredSubscriptions.length > 0 ? (
-          filteredSubscriptions.map((subscription, index) => (
-            <motion.div
-              key={subscription._id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className="group bg-white/30 backdrop-blur-lg rounded-xl border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
-            >
-              <div className="p-6">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">
-                      {subscription.name}
-                    </h3>
-                    <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium mt-2 border ${categoryColors[subscription.category]}`}>
-                      {subscription.category}
-                    </span>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text">
-                      ${subscription.price}
-                    </p>
-                    <p className="text-sm text-gray-500 capitalize">{subscription.frequency}</p>
-                  </div>
-                </div>
+      {filteredSubscriptions.length > 0 ? (
+  filteredSubscriptions.map((subscription, index) => (
+    <motion.div
+      key={subscription._id}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.1 }}
+      className="group bg-white/30 backdrop-blur-lg rounded-xl border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
+    >
+      <div className="p-6">
+        <div className="flex justify-between items-start">
+          <div>
+            <h3 className="text-xl font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">
+              {subscription.name}
+            </h3>
+            <div className="flex items-center mt-2 space-x-2">
+              <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium border ${categoryColors[subscription.category]}`}>
+                {subscription.category}
+              </span>
+              <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium border ${statusColors[subscription.status]}`}>
+                {subscription.status}
+              </span>
+            </div>
+          </div>
+          <div className="text-right">
+            <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text">
+              ${subscription.price}
+            </p>
+            <p className="text-sm text-gray-500 capitalize">{subscription.frequency}</p>
+          </div>
+        </div>
 
-                <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <motion.div 
-                    whileHover={{ scale: 1.02 }}
-                    className="flex items-center text-gray-600 bg-white/50 rounded-lg p-3 transition-all duration-300"
-                  >
-                    <Calendar className="w-5 h-5 mr-3 text-indigo-600" />
-                    <div>
-                      <p className="text-xs text-gray-500">Start Date</p>
-                      <p className="text-sm font-medium">{format(new Date(subscription.startDate), 'MMM d, yyyy')}</p>
-                    </div>
-                  </motion.div>
-                  <motion.div 
-                    whileHover={{ scale: 1.02 }}
-                    className="flex items-center text-gray-600 bg-white/50 rounded-lg p-3 transition-all duration-300"
-                  >
-                    <RefreshCw className="w-5 h-5 mr-3 text-indigo-600" />
-                    <div>
-                      <p className="text-xs text-gray-500">Renewal Date</p>
-                      <p className="text-sm font-medium">{format(new Date(subscription.renewalDate), 'MMM d, yyyy')}</p>
-                    </div>
-                  </motion.div>
-                  <motion.div 
-                    whileHover={{ scale: 1.02 }}
-                    className="flex items-center text-gray-600 bg-white/50 rounded-lg p-3 transition-all duration-300"
-                  >
-                    <DollarSign className="w-5 h-5 mr-3 text-purple-600" />
-                    <div>
-                      <p className="text-xs text-gray-500">Payment Method</p>
-                      <p className="text-sm font-medium">{subscription.paymentMethod}</p>
-                    </div>
-                  </motion.div>
-                  <motion.div 
-                    whileHover={{ scale: 1.02 }}
-                    className="flex items-center text-gray-600 bg-white/50 rounded-lg p-3 transition-all duration-300"
-                  >
-                    <Cloud className="w-5 h-5 mr-3 text-green-600" />
-                    <div>
-                      <p className="text-xs text-gray-500">Status</p>
-                      <p className="text-sm font-medium capitalize">{subscription.status}</p>
-                    </div>
-                  </motion.div>
-                </div>
-
-                <div className="mt-6 flex space-x-4">
-                  <Link
-                    to={`/app/subscriptions/edit/${subscription._id}`}
-                    className="flex-1 px-4 py-2 bg-white/50 text-gray-700 rounded-lg hover:bg-white/70 transition-all duration-300 font-medium text-center backdrop-blur-sm"
-                  >
-                    Edit
-                  </Link>
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => handleCancelSubscription(subscription._id)}
-                    className="flex-1 px-4 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-all duration-300 font-medium backdrop-blur-sm"
-                  >
-                    Cancel
-                  </motion.button>
-                </div>
-              </div>
-            </motion.div>
-          ))
-        ) : (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-12 bg-white/30 backdrop-blur-lg rounded-xl border border-white/20"
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <motion.div 
+            whileHover={{ scale: 1.02 }}
+            className="flex items-center text-gray-600 bg-white/50 rounded-lg p-3 transition-all duration-300"
           >
-            <Sparkles className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500 text-lg">No subscriptions found matching your criteria</p>
+            <Calendar className="w-5 h-5 mr-3 text-indigo-600" />
+            <div>
+              <p className="text-xs text-gray-500">Start Date</p>
+              <p className="text-sm font-medium">{format(new Date(subscription.startDate), 'MMM d, yyyy')}</p>
+            </div>
           </motion.div>
-        )}
+          <motion.div 
+            whileHover={{ scale: 1.02 }}
+            className="flex items-center text-gray-600 bg-white/50 rounded-lg p-3 transition-all duration-300"
+          >
+            <RefreshCw className="w-5 h-5 mr-3 text-indigo-600" />
+            <div>
+              <p className="text-xs text-gray-500">Renewal Date</p>
+              <p className="text-sm font-medium">{format(new Date(subscription.renewalDate), 'MMM d, yyyy')}</p>
+            </div>
+          </motion.div>
+          <motion.div 
+            whileHover={{ scale: 1.02 }}
+            className="flex items-center text-gray-600 bg-white/50 rounded-lg p-3 transition-all duration-300"
+          >
+            <DollarSign className="w-5 h-5 mr-3 text-purple-600" />
+            <div>
+              <p className="text-xs text-gray-500">Payment Method</p>
+              <p className="text-sm font-medium">{subscription.paymentMethod}</p>
+            </div>
+          </motion.div>
+        </div>
+
+        <div className="mt-6 flex space-x-4">
+          <Link
+            to={`/app/subscriptions/edit/${subscription._id}`}
+            className="flex-1 px-4 py-2 bg-blue-100 text-blue-800 rounded-lg hover:bg-blue-200 transition-all duration-300 font-medium text-center backdrop-blur-sm"
+          >
+            Edit
+          </Link>
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => handleCancelSubscription(subscription._id)}
+            className="flex-1 px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-all duration-300 font-medium backdrop-blur-sm"
+          >
+            Delete
+          </motion.button>
+        </div>
       </div>
     </motion.div>
-  );
-};
+  ))
+) : (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="text-center py-12 bg-white/30 backdrop-blur-lg rounded-xl border border-white/20"
+      >
+        <Sparkles className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+        <p className="text-gray-500 text-lg">No subscriptions found matching your criteria</p>
+      </motion.div>
+      )}
+        </div>
+        </motion.div>
+      );
+      };
 
 export default SubscriptionList;
