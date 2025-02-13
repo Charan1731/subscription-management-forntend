@@ -211,6 +211,7 @@ const EditSubscription = () => {
                 <option value="Fitness">Fitness</option>
                 <option value="Productivity">Productivity</option>
                 <option value="Utilities">Utilities</option>
+                <option value="Food">Food</option>
                 <option value="Other">Other</option>
               </select>
             </motion.div>

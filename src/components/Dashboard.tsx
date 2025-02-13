@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { CreditCard, TrendingUp, Calendar, AlertCircle, ArrowUpRight, DollarSign } from 'lucide-react';
 import { format, addDays, isBefore } from 'date-fns';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Subscription } from '../types';
 
@@ -240,9 +240,9 @@ const Dashboard = () => {
         >
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-lg font-semibold text-gray-900">Recent Activity</h3>
-            <button className="text-sm text-indigo-600 hover:text-indigo-700 flex items-center">
+            <Link to="/app/subscriptions" className="text-sm text-indigo-600 hover:text-indigo-700 flex items-center">
               View All <ArrowUpRight className="w-4 h-4 ml-1" />
-            </button>
+            </Link>
           </div>
           <div className="space-y-4">
             {recentActivity.map((activity, index) => (
