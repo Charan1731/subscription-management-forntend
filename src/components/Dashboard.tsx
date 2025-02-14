@@ -22,8 +22,7 @@ const Dashboard = () => {
       }
 
       try {
-        const response = await fetch(`https://budgetbox-backend.vercel.app
-/api/v1/subscriptions/user/${user._id}`, {
+        const response = await fetch(`https://budgetbox-backend.vercel.app/api/v1/subscriptions/user/${user._id}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           }
