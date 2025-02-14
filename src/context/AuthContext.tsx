@@ -64,6 +64,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const response = await fetch(`${url}/api/v1/auth/sign-in`, {
         method: 'POST',
+        mode: 'no-cors',
         headers: { 
           'Content-Type': 'application/json',
           'Accept': 'application/json'
