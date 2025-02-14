@@ -63,7 +63,8 @@ const SubscriptionList = () => {
       }
 
       try {
-        const response = await fetch(`http://localhost:5500/api/v1/subscriptions/user/${user._id}`, {
+        const response = await fetch(`budegetbox-backend.vercel.app
+/api/v1/subscriptions/user/${user._id}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           }
@@ -132,7 +133,8 @@ const SubscriptionList = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:5500/api/v1/subscriptions/${subscriptionId}`, {
+      const response = await fetch(`budegetbox-backend.vercel.app
+/api/v1/subscriptions/${subscriptionId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
