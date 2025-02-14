@@ -31,7 +31,7 @@ const EditSubscription = () => {
       }
 
       try {
-        const response = await fetch(`budegetbox-backend.vercel.app
+        const response = await fetch(`https://budgetbox-backend.vercel.app
 /api/v1/subscriptions/${id}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -88,7 +88,7 @@ const EditSubscription = () => {
 
     try {
       setLoading(true);
-      const response = await fetch(`budegetbox-backend.vercel.app
+      const response = await fetch(`https://budgetbox-backend.vercel.app
 /api/v1/subscriptions/${id}`, {
         method: 'PUT',
         headers: {

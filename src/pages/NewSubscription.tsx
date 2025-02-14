@@ -47,7 +47,7 @@ const NewSubscription = () => {
     }
 
     try {
-      const response = await fetch('budegetbox-backend.vercel.app/api/v1/subscriptions', {
+      const response = await fetch('https://budgetbox-backend.vercel.app/api/v1/subscriptions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

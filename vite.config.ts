@@ -9,7 +9,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'budegetbox-backend.vercel.app',
+        target: 'https://budgetbox-backend.vercel.app',
         changeOrigin: true,
         secure: false,
       },
