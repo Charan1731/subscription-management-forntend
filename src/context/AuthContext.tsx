@@ -21,7 +21,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
-  const url = "https://budgetbox-backend.vercel.app";
+  const url = "http://localhost:5500";
 
   const checkAuth = async () => {
     try {
