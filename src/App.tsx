@@ -15,6 +15,7 @@ import Features from './pages/Features';
 import Pricing from './pages/Pricing';
 import About from './pages/About';
 import { CreditCard } from 'lucide-react';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -52,6 +53,7 @@ function App() {
                         <Route path="/subscriptions" element={<SubscriptionList />} />
                         <Route path="/subscriptions/new" element={<NewSubscription />} />
                         <Route path="/subscriptions/edit/:id" element={<EditSubscription />} />
+                        <Route path="/profile/:id" element={<Profile />} />
                       </Routes>
                     </AnimatePresence>
                   </motion.div>

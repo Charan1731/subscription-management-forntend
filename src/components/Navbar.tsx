@@ -64,6 +64,7 @@ const Navbar = () => {
             </button>
           </div>
           <div className="hidden md:flex items-center space-x-6">
+          <Link to={`/app/profile/${user?._id}`} className="relative group flex items-center space-x-2 px-3 py-2 text-gray-600 hover:text-indigo-600 transition-colors">
             <div className="flex items-center space-x-3">
               <div className="h-8 w-8 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 flex items-center justify-center text-white font-medium">
                 {user?.name.charAt(0).toUpperCase()}
@@ -72,6 +73,7 @@ const Navbar = () => {
                 {user?.name}
               </span>
             </div>
+          </Link>
             
             <motion.button
               onClick={signOut}
