@@ -63,7 +63,7 @@ const SubscriptionList = () => {
       }
 
       try {
-        const response = await fetch(`http://localhost:5500
+        const response = await fetch(`https://budgetbox-backend-qziz.onrender.com
 /api/v1/subscriptions/user/${user._id}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -133,7 +133,7 @@ const SubscriptionList = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:5500
+      const response = await fetch(`https://budgetbox-backend-qziz.onrender.com
 /api/v1/subscriptions/${subscriptionId}`, {
         method: 'DELETE',
         headers: {
@@ -272,7 +272,7 @@ const SubscriptionList = () => {
             initial="hidden"
             animate="visible"
             exit="hidden"
-            className="bg-white/30 backdrop-blur-lg rounded-xl border border-white/20 shadow-lg"
+            className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 backdrop-blur-lg rounded-xl border border-white/20 shadow-lg"
           >
             <motion.div
               initial={{ opacity: 0, y: -20 }}

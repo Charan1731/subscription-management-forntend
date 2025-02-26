@@ -12,8 +12,6 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    console.log('AuthGuard - Current user:', user);
-    console.log('AuthGuard - Token exists:', !!token);
     
     if (!isLoading && !user && !token) {
       console.log('User is not authenticated, redirecting to sign-in');
@@ -29,7 +27,6 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
     );
   }
   if (!isLoading && !user) {
-    console.log('AuthGuard - Redirecting to sign-in');
     return <Navigate to="/sign-in" replace />;
   }
 

@@ -31,7 +31,7 @@ const Profile = () => {
       if (password) updateData.password = password;
 
       const response = await fetch(
-        `http://localhost:5500/api/v1/users/${user?._id}`,
+        `https://budgetbox-backend-qziz.onrender.com/api/v1/users/${user?._id}`,
         {
           method: "PUT",
           headers: {
