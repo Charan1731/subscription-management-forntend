@@ -17,7 +17,7 @@ const SignUp = () => {
     try {
       await signUp(name, email, password);
     } catch (err) {
-      setError('Failed to create account');
+      setError(err instanceof Error ? err.message : 'An error occurred');
     }
   };
 
