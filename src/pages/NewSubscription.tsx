@@ -37,7 +37,7 @@ const NewSubscription = () => {
     e.preventDefault();
     setIsSubmitting(true);
     setError('');
-
+  
     const token = localStorage.getItem('token');
     if (!token) {
       setError('Authentication required');
@@ -45,7 +45,7 @@ const NewSubscription = () => {
       navigate('/login');
       return;
     }
-
+  
     try {
       const response = await fetch('https://budgetbox-backend-qziz.onrender.com/api/v1/subscriptions', {
         method: 'POST',
@@ -55,19 +55,26 @@ const NewSubscription = () => {
         },
         body: JSON.stringify(formData),
       });
-
+  
       if (response.status === 401) {
         localStorage.removeItem('token');
         setError('Session expired. Please login again.');
         navigate('/login');
         return;
       }
-
+  
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to add subscription');
+        let errorMessage = 'Failed to add subscription';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+        } catch (e) {
+          // If response cannot be parsed as JSON, use status text
+          errorMessage = `Server error (${response.status}): ${response.statusText || errorMessage}`;
+        }
+        throw new Error(errorMessage);
       }
-
+  
       navigate('/app/subscriptions');
     } catch (error) {
       console.error('Error:', error);
