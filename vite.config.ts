@@ -9,7 +9,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:5500',
+        target: 'https://budgetbox-backend-qziz.onrender.com',
         changeOrigin: true,
         secure: false,
       },

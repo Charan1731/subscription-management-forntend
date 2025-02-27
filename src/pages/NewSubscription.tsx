@@ -47,7 +47,7 @@ const NewSubscription = () => {
     }
   
     try {
-      const response = await fetch('http://localhost:5500/api/v1/subscriptions', {
+      const response = await fetch('https://budgetbox-backend-qziz.onrender.com/api/v1/subscriptions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
