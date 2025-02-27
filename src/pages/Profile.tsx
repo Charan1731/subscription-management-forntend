@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import ConfirmationModal from "../components/ConfirmationModal";
 
 const Profile = () => {
   const { user } = useAuth(); // Ensure setUser is available to update context
@@ -10,7 +11,59 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // State for modal
   const navigate = useNavigate();
+
+  const handleDelete = async () => {
+    setIsDeleteModalOpen(true); // Open the confirmation modal
+  };
+
+  const confirmDelete = async () => {
+    setIsDeleteModalOpen(false); // Close the modal
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/sign-in");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `http://localhost:5500/api/v1/users/${user?._id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/sign-in");
+        return;
+      }
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "An error occurred");
+      }
+
+      setSuccess("Account deleted successfully. Redirecting to sign-in...");
+      setTimeout(() => {
+        localStorage.removeItem("token");
+        navigate("/sign-in");
+      }, 2000);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "An error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,7 +84,7 @@ const Profile = () => {
       if (password) updateData.password = password;
 
       const response = await fetch(
-        `https://budgetbox-backend-qziz.onrender.com/api/v1/users/${user?._id}`,
+        `http://localhost:5500/api/v1/users/${user?._id}`,
         {
           method: "PUT",
           headers: {
@@ -53,9 +106,11 @@ const Profile = () => {
       if (!response.ok) {
         throw new Error(data.message || "An error occurred");
       }
-      setSuccess("Profile updated successfully");
+      setTimeout(() => {
+        navigate("/sign-in");
+      }, 2000);
+      setSuccess("Profile updated successfully navigating to sign-in");
       setPassword("");
-
     } catch (error) {
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
@@ -74,7 +129,7 @@ const Profile = () => {
       className="max-w-full mx-auto px-4 py-8"
     >
       <div className="relative overflow-hidden rounded-2xl bg-white backdrop-blur-sm p-8">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/70 to-purple-500/70" />
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/40 to-purple-500/40" />
         <div className="relative flex items-center gap-6">
           <div className="relative">
             <div className="w-24 h-24 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 p-[2px]">
@@ -97,10 +152,32 @@ const Profile = () => {
       </div>
 
       <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl mt-10 p-8">
-        <div className="flex items-center mb-8">
+        <div className="flex items-center justify-between mb-8">
           <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
             Profile
           </h2>
+          
+          {/* Delete Button Moved Outside the Form */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <button
+              onClick={handleDelete}
+              disabled={loading}
+              className="px-6 py-2 text-red-600 bg-red-100 opacity-90 hover:opacity-100 rounded-lg transition-colors font-medium shadow-md hover:shadow-lg disabled:opacity-50 flex items-center"
+            >
+              {loading ? (
+                <>
+                  <span className="animate-spin mr-2">🌀</span>
+                  Deleting...
+                </>
+              ) : (
+                "Delete Account"
+              )}
+            </button>
+          </motion.div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
@@ -147,12 +224,12 @@ const Profile = () => {
             </motion.div>
           </div>
 
-          {/* Action Buttons */}
+          {/* Update Button Only */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="flex justify-end space-x-4 pt-4"
+            className="flex justify-end pt-4"
           >
             <button
               type="submit"
@@ -161,7 +238,7 @@ const Profile = () => {
             >
               {loading ? (
                 <>
-                  <span className="animate-spin">🌀</span>
+                  <span className="animate-spin mr-2">🌀</span>
                   Updating...
                 </>
               ) : (
@@ -191,6 +268,14 @@ const Profile = () => {
           )}
         </form>
       </div>
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={confirmDelete}
+        message="Are you sure you want to delete your account? This action cannot be undone."
+      />
     </motion.div>
   );
 };

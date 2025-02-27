@@ -31,7 +31,7 @@ const EditSubscription = () => {
       }
 
       try {
-        const response = await fetch(`https://budgetbox-backend-qziz.onrender.com
+        const response = await fetch(`http://localhost:5500
 /api/v1/subscriptions/${id}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -88,7 +88,7 @@ const EditSubscription = () => {
 
     try {
       setLoading(true);
-      const response = await fetch(`https://budgetbox-backend-qziz.onrender.com
+      const response = await fetch(`http://localhost:5500
 /api/v1/subscriptions/${id}`, {
         method: 'PUT',
         headers: {
