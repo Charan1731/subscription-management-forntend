@@ -5,6 +5,9 @@ import { format } from 'date-fns';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Subscription } from '../types';
+import ConfirmationModal from './ConfirmationModal';
+import SuccessModal from './SuccessModal';
+import CreateSubscriptionModal from './CreateSubscriptionModal';
 
 const categoryColors: Record<string, string> = {
   Entertainment: 'bg-purple-100 text-purple-800 border-purple-200',
@@ -39,11 +42,28 @@ const SubscriptionList = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [filters, setFilters] = useState({
     category: '',
     status: '',
     priceRange: '',
     frequency: '',
+  });
+  const [deleteModal, setDeleteModal] = useState<{
+    isOpen: boolean;
+    subscriptionId: string;
+    subscriptionName: string;
+  }>({
+    isOpen: false,
+    subscriptionId: '',
+    subscriptionName: ''
+  });
+  const [showSuccessModal, setShowSuccessModal] = useState<{
+    isOpen: boolean;
+    message: string;
+  }>({
+    isOpen: false,
+    message: '',
   });
 
   // Rotate search placeholders
@@ -124,7 +144,7 @@ const SubscriptionList = () => {
     });
   };
 
-  const handleCancelSubscription = async (subscriptionId: string) => {
+  const handleCancelSubscription = async (subscriptionId: string, subscriptionName: string) => {
     const token = localStorage.getItem('token');
     if (!token) {
       navigate('/sign-in');
@@ -151,6 +171,12 @@ const SubscriptionList = () => {
 
       // Remove the deleted subscription from the list
       setSubscriptions(prev => prev.filter(sub => sub._id !== subscriptionId));
+      
+      // Show success message
+      setShowSuccessModal({
+        isOpen: true,
+        message: `${subscriptionName} has been successfully deleted.`
+      });
     } catch (err) {
       console.error('Error cancelling subscription:', err);
       setError('Failed to cancel subscription. Please try again.');
@@ -223,6 +249,31 @@ const SubscriptionList = () => {
       animate={{ opacity: 1 }}
       className="space-y-6"
     >
+      {/* Confirmation Modal for Subscription Deletion */}
+      <ConfirmationModal
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ ...deleteModal, isOpen: false })}
+        onConfirm={() => {
+          handleCancelSubscription(deleteModal.subscriptionId, deleteModal.subscriptionName);
+          setDeleteModal({ ...deleteModal, isOpen: false });
+        }}
+        message={`Are you sure you want to delete the subscription for ${deleteModal.subscriptionName}? This action cannot be undone.`}
+      />
+
+      {/* Success Modal */}
+      <SuccessModal
+        isOpen={showSuccessModal.isOpen}
+        onClose={() => setShowSuccessModal({ isOpen: false, message: '' })}
+        message={showSuccessModal.message}
+        autoCloseDelay={2500}
+      />
+
+      {/* Create Subscription Modal */}
+      <CreateSubscriptionModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+      />
+
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex-1">
           <div className="relative group">
@@ -253,13 +304,15 @@ const SubscriptionList = () => {
               </span>
             )}
           </motion.button>
-          <Link
-            to="/app/subscriptions/new"
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setShowCreateModal(true)}
             className="flex items-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add New
-          </Link>
+          </motion.button>
         </div>
       </div>
 
@@ -447,7 +500,11 @@ const SubscriptionList = () => {
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => handleCancelSubscription(subscription._id)}
+            onClick={() => setDeleteModal({
+              isOpen: true,
+              subscriptionId: subscription._id,
+              subscriptionName: subscription.name
+            })}
             className="flex-1 px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-all duration-300 font-medium backdrop-blur-sm"
           >
             Delete

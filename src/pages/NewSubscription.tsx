@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, CreditCard, Calendar, DollarSign, Tag, Clock, CreditCardIcon, FileText } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import SuccessModal from '../components/SuccessModal';
 
 const NewSubscription = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const categoryFromUrl = queryParams.get('category') || '';
+  
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
-    category: '',
+    category: categoryFromUrl,
     price: '',
     frequency: '',
     startDate: '',
@@ -83,7 +89,7 @@ const NewSubscription = () => {
   
       const data = await response.json();
       console.log('Subscription created successfully:', data);
-      navigate('/app/subscriptions');
+      setShowSuccessModal(true);
     } catch (error) {
       console.error('Error:', error);
       setError(error instanceof Error ? error.message : 'Failed to add subscription. Please try again.');
@@ -101,6 +107,16 @@ const NewSubscription = () => {
       animate={{ opacity: 1, y: 0 }}
       className="max-w-4xl mx-auto px-4 py-8"
     >
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => {
+          setShowSuccessModal(false);
+          navigate('/app/subscriptions');
+        }}
+        message={`Your subscription for ${formData.name} has been successfully created.`}
+        autoCloseDelay={2500}
+      />
+
       <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-8">
         <div className="flex items-center mb-8">
           <Link

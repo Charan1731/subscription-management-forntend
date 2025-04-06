@@ -4,6 +4,7 @@ import { ArrowLeft, CreditCard, Calendar, DollarSign, Tag, Clock, CreditCardIcon
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Subscription } from '../types';
+import SuccessModal from '../components/SuccessModal';
 
 const EditSubscription = () => {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ const EditSubscription = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [formData, setFormData] = useState<Partial<Subscription>>({
     name: '',
     category: undefined,
@@ -106,7 +108,7 @@ const EditSubscription = () => {
         throw new Error('Failed to update subscription');
       }
 
-      navigate('/app/subscriptions');
+      setShowSuccessModal(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update subscription');
     } finally {
@@ -145,6 +147,16 @@ const EditSubscription = () => {
       animate={{ opacity: 1, y: 0 }}
       className="max-w-4xl mx-auto px-4 py-8"
     >
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => {
+          setShowSuccessModal(false);
+          navigate('/app/subscriptions');
+        }}
+        message={`The subscription for ${formData.name} has been successfully updated.`}
+        autoCloseDelay={2500}
+      />
+
       <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-8">
         <div className="flex items-center mb-8">
           <Link
