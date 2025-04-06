@@ -22,7 +22,7 @@ const Dashboard = () => {
       }
 
       try {
-        const response = await fetch(`https://budgetbox-backend-qziz.onrender.com/api/v1/subscriptions/user/${user._id}`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/subscriptions/user/${user._id}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           }

@@ -32,7 +32,7 @@ const Profile = () => {
 
     try {
       const response = await fetch(
-        `https://budgetbox-backend-qziz.onrender.com/api/v1/users/${user?._id}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/users/${user?._id}`,
         {
           method: "DELETE",
           headers: {
@@ -84,7 +84,7 @@ const Profile = () => {
       if (password) updateData.password = password;
 
       const response = await fetch(
-        `https://budgetbox-backend-qziz.onrender.com/api/v1/users/${user?._id}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/users/${user?._id}`,
         {
           method: "PUT",
           headers: {

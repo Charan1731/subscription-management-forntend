@@ -31,8 +31,7 @@ const EditSubscription = () => {
       }
 
       try {
-        const response = await fetch(`https://budgetbox-backend-qziz.onrender.com
-/api/v1/subscriptions/${id}`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/subscriptions/${id}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           }
@@ -88,8 +87,7 @@ const EditSubscription = () => {
 
     try {
       setLoading(true);
-      const response = await fetch(`https://budgetbox-backend-qziz.onrender.com
-/api/v1/subscriptions/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/subscriptions/${id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

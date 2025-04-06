@@ -47,13 +47,19 @@ const NewSubscription = () => {
     }
   
     try {
-      const response = await fetch('https://budgetbox-backend-qziz.onrender.com/api/v1/subscriptions', {
+      console.log('Submitting subscription:', formData);
+      
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/subscriptions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          price: parseFloat(formData.price),
+          currency: 'USD' // Default currency
+        }),
       });
   
       if (response.status === 401) {
@@ -70,15 +76,17 @@ const NewSubscription = () => {
           errorMessage = errorData.message || errorMessage;
         } catch (e) {
           // If response cannot be parsed as JSON, use status text
-          errorMessage = `Server error (${response.status}): ${response.statusText || errorMessage}`;
+          errorMessage = `Server error (${response.status}): ${response.statusText || 'Unknown error'}`;
         }
         throw new Error(errorMessage);
       }
   
+      const data = await response.json();
+      console.log('Subscription created successfully:', data);
       navigate('/app/subscriptions');
     } catch (error) {
       console.error('Error:', error);
-      setError(error instanceof Error ? error.message : 'Failed to add subscription');
+      setError(error instanceof Error ? error.message : 'Failed to add subscription. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -107,7 +115,11 @@ const NewSubscription = () => {
         </div>
 
         {error && (
-          <p>${error}</p>
+          <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
+            <p className="flex items-center">
+              <span className="mr-2">⚠️</span> {error}
+            </p>
+          </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-8">
